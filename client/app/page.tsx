@@ -6,7 +6,6 @@ import down from "../down-arrow.svg";
 
 export default function ProjectsPage() {
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-  console.log('hewwehr',process.env.NEXT_PUBLIC_API_URL);
   const [projects, setProjects] = useState<any[]>([]);
   const [expandedProjectId, setExpandedProjectId] = useState<number | null>(null);
   const [expensesByProject, setExpensesByProject] = useState<Record<number, any[]>>({});
@@ -208,7 +207,7 @@ export default function ProjectsPage() {
         {projects.map((project) => (
           <div key={project.project_id} className="flex flex-col">
             {/* Project Card */}
-            <div className="flex justify-between items-center bg-[#454545] p-4 rounded-t-md border border-[#b3751d21]">
+            <div className={`flex flex-wrap gap-7 sm:justify-between sm:items-center bg-[#454545] p-4 rounded-t-md ${!expandedProjectId ? 'rounded-b-md' : ''} border-2 border-[#8c6c3f]`}>
               <div className="flex items-start gap-4">
                 <button className="cursor-pointer" onClick={() => toggleProject(project.project_id)}>
                   <img
@@ -217,12 +216,12 @@ export default function ProjectsPage() {
                         ? "/down-arrow.svg"
                         : "/up-arrow.svg"
                     }
-                    className="h-6"
+                    className="h-4 mt-0.5"
                   />
                 </button>
 
                 <div>
-                  <h2 className="text-xl font-medium">
+                  <h2 className={` font-medium sm:text-xl `}>
                     {project.project_name}
                   </h2>
                   <p className="text-[#b3741d] text-normal">
@@ -254,11 +253,11 @@ export default function ProjectsPage() {
 
             {/* Expenses Section */}
             {expandedProjectId === project.project_id && (
-              <div className="bg-[#2b2b2b] rounded-b-md p-4 flex flex-col border-b-2 border-x-2 border-[#8c6c3f]">
-                <div className="flex flex-row justify-between w-210 p-4">
+              <div className="bg-[#201f1f] rounded-b-md p-4 flex flex-col border-b-2 border-x-2 border-[#8c6c3f]">
+                <div className="flex flex-row justify-between w-full max-w-210 gap-3 p-4">
                   <div>
                     <h3>Estimated Budget</h3>
-                    <p>{project.estimated_budget}</p>
+                    <p>{Number(project.estimated_budget).toLocaleString("en-AE")}</p>
                   </div>
                   <div>
                     <h3>Total Expenses</h3>
@@ -335,28 +334,28 @@ export default function ProjectsPage() {
                   </div>
                   :
                   <div>
-                    <div className="flex justify-between p-3 w-full">
-                      <p className="w-1/4 text-sm text-[#8c6c3f]">Description</p>
-                      <p className="w-1/4 text-sm text-[#8c6c3f]">Category</p>
-                      <p className="w-1/4 text-sm text-[#8c6c3f]">Amount</p>
+                    <div className="flex justify-between items-start p-3 w-full">
+                      <div className="flex items-start justify-between w-full max-w-3/4">
+                        <p className="w-1/4 text-sm text-[#8c6c3f]">Description</p>
+                        <p className="w-1/4 text-sm text-[#8c6c3f]">Category</p>
+                        <p className="w-1/4 text-sm text-[#8c6c3f]">Amount</p>
+                      </div>
                       <div className="flex gap-2">
-                            <button className="text-sm text-blue-400">
-                            </button>
-
-                            <button className="text-sm text-red-400">
-                            </button>
-                          </div>
+                        <img src='/edit.svg' className="h-5 hidden"/>
+                        <img src='/delete.svg' className="h-5.5 hidden"/>
+                      </div>
                     </div>
                     {expensesByProject[project.project_id]?.length > 0 ? (
                       expensesByProject[project.project_id].map((expense) => (
-                        <div className="flex justify-between items-center border border-[#8c6c3f] p-3 bg-[#c89d6024] w-full">
-                          <div className="w-1/4">{expense.description}</div>
-                          <div className="w-1/4">{expense.category}</div>
-                          <div className="w-1/4">AED {Number(expense.amount).toLocaleString("en-AE")}</div>
-
+                        <div className="flex justify-between items-start border border-[#8c6c3f] p-3 bg-[#c89d6024] w-full">
+                          <div className="flex justify-between items-start w-full max-w-3/4">
+                            <div className="w-1/4">{expense.description}</div>
+                            <div className="w-1/4">{expense.category}</div>
+                            <div className="w-1/4">AED {Number(expense.amount).toLocaleString("en-AE")}</div>
+                          </div>
                           <div className="flex gap-2">
                             <button
-                              className="text-sm text-blue-400"
+                              className="cursor-pointer transition-all hover:scale-110 duration-200"
                               onClick={() => {
                                 setEditingExpenseId(expense.expense_id);
                                 setExpenseDescription(expense.description);
@@ -365,16 +364,16 @@ export default function ProjectsPage() {
                                 setShowExpensePopup(true);
                               }}
                             >
-                              Edit
+                              <img src='/edit.svg' className="h-5"/>
                             </button>
 
                             <button
-                              className="text-sm text-red-400"
+                              className="cursor-pointer transition-all hover:scale-110 duration-200"
                               onClick={() =>
                                 deleteExpenseHandler(expense.expense_id, project.project_id)
                               }
                             >
-                              Delete
+                              <img src='/delete.svg' className="h-5.5"/>
                             </button>
                           </div>
                         </div>
@@ -397,11 +396,11 @@ export default function ProjectsPage() {
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"></div>
 
           {/* Modal */}
-          <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="bg-[#2b2b2b] border-2 border-[#8c6c3f] rounded-lg p-6 w-120">
+          <div className="fixed inset-0 flex items-center justify-center z-50 px-4">
+            <div className="bg-[#2b2b2b] border-2 border-[#8c6c3f] rounded-lg p-6 w-full max-w-120">
               <h2 className="text-xl font-medium mb-6">Add Project</h2>
 
-              <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-6 min-w-40 max-w-120">
                 <div className="flex flex-col">
                   <label className="text-[#b3741d]">Project Name</label>
                   <input
