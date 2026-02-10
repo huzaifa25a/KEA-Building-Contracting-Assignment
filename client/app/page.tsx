@@ -164,7 +164,7 @@ export default function ProjectsPage() {
       setExpenseDescription("");
       setExpenseAmount("");
       setExpenseCategory("");
-  
+      setShowExpensePopup(false);
       fetchExpenses(projectId);
     } catch (err) {
       console.error("Error updating expense:", err);
@@ -319,16 +319,28 @@ export default function ProjectsPage() {
                     </div>
                     <div className="flex flex-row gap-3 mt-10 justify-end">
                       <button 
-                        onClick={() => setShowExpensePopup(false)}
-                        className="text-[#b3741d] px-3 py-1 border border-[#b3741d] rounded-md bg-[#b3751d21] cursor-pointer hover:bg-[#b3751d69]"
+                        onClick={() => {
+                          setShowExpensePopup(false);
+                          setEditingExpenseId(null);
+                          setExpenseDescription("");
+                          setExpenseAmount("");
+                          setExpenseCategory("");
+                        }}
+                        className="text-[#b3741d] px-3 py-1 border border-[#b3741d] rounded-md bg-[#b3751d21]"
                       >
                         Cancel
                       </button>
                       <button
-                         onClick={() => addExpensehandler(project.project_id)}
-                         className="px-3 py-1 bg-[#b3741d] rounded-md hover:bg-[#b3751d69] cursor-pointer"
+                        onClick={() => {
+                          if (editingExpenseId) {
+                            updateExpenseHandler(editingExpenseId, project.project_id);
+                          } else {
+                            addExpensehandler(project.project_id);
+                          }
+                        }}
+                        className="px-3 py-1 bg-[#b3741d] rounded-md hover:bg-[#b3751d69] cursor-pointer"
                       >
-                        Add Expense
+                        {editingExpenseId ? "Update Expense" : "Add Expense"}
                       </button>
                     </div>
                   </div>
