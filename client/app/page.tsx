@@ -5,6 +5,8 @@ import up from "../up-arrow.svg";
 import down from "../down-arrow.svg";
 
 export default function ProjectsPage() {
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  console.log('hewwehr',process.env.NEXT_PUBLIC_API_URL);
   const [projects, setProjects] = useState<any[]>([]);
   const [expandedProjectId, setExpandedProjectId] = useState<number | null>(null);
   const [expensesByProject, setExpensesByProject] = useState<Record<number, any[]>>({});
@@ -24,7 +26,7 @@ export default function ProjectsPage() {
   useEffect(() => {
     async function fetchProjects() {
       try {
-        const res = await fetch("http://localhost:5000/projects/get_projects");
+        const res = await fetch(`${API_BASE_URL}/projects/get_projects`);;
         const data = await res.json();
         setProjects(data);
       } catch (err) {
@@ -43,7 +45,7 @@ export default function ProjectsPage() {
     }
   
     try {
-      await fetch("http://localhost:5000/projects/add_projects", {
+      await fetch(`${API_BASE_URL}/projects/add_projects`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -60,7 +62,7 @@ export default function ProjectsPage() {
       setShowProjectPopup(false);
   
       // Refresh projects list
-      const res = await fetch("http://localhost:5000/projects/get_projects");
+      const res = await fetch(`${API_BASE_URL}/projects/get_projects`);
       const data = await res.json();
       setProjects(data);
     } catch (err) {
@@ -72,7 +74,7 @@ export default function ProjectsPage() {
   async function fetchExpenses(projectId: number) {
     try {
       const res = await fetch(
-        `http://localhost:5000/expenses/get_expenses/${projectId}`
+        `${API_BASE_URL}/expenses/get_expenses/${projectId}`
       );
       const data = await res.json();
 
@@ -113,7 +115,7 @@ export default function ProjectsPage() {
   
     try {
       await fetch(
-        `http://localhost:5000/expenses/add_expense/${projectId}`,
+        `${API_BASE_URL}/expenses/add_expense/${projectId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -147,7 +149,7 @@ export default function ProjectsPage() {
   
     try {
       await fetch(
-        `http://localhost:5000/expenses/update_expense/${expenseId}`,
+        `${API_BASE_URL}/expenses/update_expense/${expenseId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -177,7 +179,7 @@ export default function ProjectsPage() {
   
     try {
       await fetch(
-        `http://localhost:5000/expenses/delete_expense/${expenseId}`,
+        `${API_BASE_URL}/expenses/delete_expense/${expenseId}`,
         { method: "DELETE" }
       );
   
