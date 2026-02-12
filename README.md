@@ -1,132 +1,186 @@
+
 **Projects & Expenses Tracker**
 
 **Full-Stack Take-Home Assignment – KEA Building Contracting LLC**
 
-Live Demo
-Frontend (Vercel): https://kea-building-contracting-assignment.vercel.app/
+**Live Demo:**
 
-Backend (Railway): https://kea-building-contracting-assignment-production.up.railway.app
+ - Frontend (Vercel): https://kea-building-contracting-assignment.vercel.app/ 
+ - Backend (Railway): https://kea-building-contracting-assignment-production.up.railway.app
 
-Tech Stack:
-Frontend: Next.js (App Router), React, Tailwind CSS
-Backend: Node.js, Express
-Database: PostgreSQL
+**Tech Stack:** 
+ - **Frontend:** Next.js (App Router), React, Tailwind CSS
+ - **Backend:**    Node.js, Express
+ - **Database**: PostgreSQL
+ - **Deployment:**
+	 - **Frontend:** Vercel
+	 - **Backend & Database:** Railway
 
-Deployment:
-Frontend: Vercel
-Backend & Database: Railway
+**Features Implemented:**
 
-Features Implemented:
-1. Create projects with client name and estimated budget
-2. View list of all projects with:
-  Estimated budget
-  Total expenses
-  Remaining budget
-3. Expand a project to view its expenses (accordion-style)
-4. Add expenses to a project
-5. Update and delete expenses
-6. Budget calculations update in real time after each change
+ - Create projects with client name and estimated budget
+ - View list of all projects with:   
+	 - Estimated budget   
+	 - Total expenses   
+	 - Remaining budget
+ - Expand a project to view its expenses (accordion-style)
+ - Add expenses to a project
+ - Update and delete expenses
+ - Budget calculations update in real time after each change
 
-Project Structure
-KEA-Building-Contracting-Assignment
-│
-├── client/        # Next.js frontend
-│
-├── server/        # Express backend
-│
+**Project Structure**
+
+ - KEA-Building-Contracting-Assignment <br/>
+├ <br/>
+├── client/&emsp;&emsp;&emsp;&emsp;# Next.js frontend<br/>
+├ <br/>
+├── server/&emsp;&emsp;&emsp;&emsp;# Express backend<br/>
+├ <br/>
 └── README.md
 
-Setup Instructions (Local)
-1. Clone the repository
-git clone https://github.com/huzaifa25a/KEA-Building-Contracting-Assignment
-cd KEA-Building-Contracting-Assignment
+**Setup Instructions (Local)**
+ - **Clone the repository**
+	 - git clone
+   https://github.com/huzaifa25a/KEA-Building-Contracting-Assignment.git
+	 - cd KEA-Building-Contracting-Assignment
+	   
+ - **Backend Setup**
+	 - cd server
+	 - npm install
+	- Create a .env file in server/:
+		- PORT=5000
+		- DATABASE_URL=postgresql://postgres:<your_password>@localhost:5432/projects_tracker
+	- Start the backend:
+		- npm start
+	 - Backend will run on:
+		 - http://localhost:5000
 
-2. Backend Setup
-cd server
-npm install
+ - **Database Setup (PostgreSQL)**
+	 - Create database: 
+		 - CREATE DATABASE projects_tracker;
+    - Create tables: 
+	    - CREATE TABLE projects (project_id SERIAL PRIMARY KEY, project_name VARCHAR(255) NOT NULL, client_name VARCHAR(255) NOT NULL, estimated_budget NUMERIC(12, 2) NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+		 - CREATE TABLE expenses (expense_id SERIAL PRIMARY KEY, project_id    INTEGER NOT NULL, description TEXT NOT NULL, amount  NUMERIC(12, 2) NOT NULL, category VARCHAR(50) NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, CONSTRAINT fk_project FOREIGN KEY (project_id) REFERENCES projects(project_id) ON DELETE CASCADE);
+   
+ - **Frontend Setup**
+	 - cd client 
+	 - npm install
+	 - Create .env.local in client/:
+		 - NEXT_PUBLIC_API_URL=http://localhost:5000
+	 - Run frontend: 
+		 - npm run dev
+	- Frontend will run on: 
+		- http://localhost:3000
 
-Create a .env file in server/:
+**Database Schema Explanation:**
 
-PORT=5000
-DATABASE_URL=postgresql://postgres:<your_password>@localhost:5432/projects_tracker
+ - **Projects Table:**
+<table>
+	<tr>
+		<th>Column</th>
+		<th>Type</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td>project_id</td>
+		<td>SERIAL (PK)</td>
+		<td>Unique project ID</td>
+	</tr>
+	<tr>
+		<td>project_name</td>
+		<td>VARCHAR</td>
+		<td>Project name</td>
+	</tr>
+	<tr>
+		<td>client_name</td>
+		<td>VARCHAR</td>
+		<td>Client name</td>
+	</tr>
+	<tr>
+		<td>estimated_budget</td>
+		<td>NUMERIC</td>
+		<td>Total allocated budget</td>
+	</tr>
+	<tr>
+		<td>created_at</td>
+		<td>TIMESTAMP</td>
+		<td>Creation time</td>
+	</tr>
+</table>
 
+ - **Expenses Table:**
+<table>
+  <tr>
+    <th>Column</th>
+    <th>Type</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>expense_id</td>
+    <td>SERIAL (PK)</td>
+    <td>Unique expense ID</td>
+  </tr>
+  <tr>
+    <td>project_id</td>
+    <td>INTEGER (FK)</td>
+    <td>Linked project</td>
+  </tr>
+  <tr>
+    <td>description</td>
+    <td>TEXT</td>
+    <td>Expense description</td>
+  </tr>
+  <tr>
+    <td>amount</td>
+    <td>NUMERIC</td>
+    <td>Expense amount</td>
+  </tr>
+  <tr>
+    <td>category</td>
+    <td>VARCHAR</td>
+    <td>Material / Labor / Other</td>
+  </tr>
+  <tr>
+    <td>created_at</td>
+    <td>TIMESTAMP</td>
+    <td>Creation time</td>
+  </tr>
+</table>
 
-Start the backend:
-npm start
+ - **One-to-many relationship: one project → many expenses**
 
+ - **ON DELETE CASCADE ensures expenses are removed if a project is deleted**
 
-Backend will run on:
-http://localhost:5000
+**API Endpoints (Backend)**
 
-3. Database Setup (PostgreSQL)
-Create database:
-CREATE DATABASE projects_tracker;
+ - **Projects:**
+	 - POST /projects/add_projects
+	 - GET /projects/get_projects
 
-Create tables:
-CREATE TABLE projects (project_id SERIAL PRIMARY KEY, project_name VARCHAR(255) NOT NULL, client_name VARCHAR(255) NOT NULL, estimated_budget NUMERIC(12, 2) NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+ - **Expenses:**
+	 - POST /expenses/add_expense/:project_id
+	 - GET /expenses/get_expenses/:project_id
+	 - PUT /expenses/update_expense/:expense_id
+	 - DELETE /expenses/delete_expense/:expense_id
 
-CREATE TABLE expenses (expense_id SERIAL PRIMARY KEY, project_id INTEGER NOT NULL, description TEXT NOT NULL, amount NUMERIC(12, 2) NOT NULL, category VARCHAR(50) NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, CONSTRAINT fk_project FOREIGN KEY (project_id) REFERENCES projects(project_id) ON DELETE CASCADE);
+**Assumptions Made:**
 
-4. Frontend Setup
-cd client
-npm install
+ - Authentication is not required
+ - One currency (AED) is used throughout
+ - Project deletion is not part of scope (expenses delete handled)
+ - Basic validation is sufficient for this assessment
 
-Create .env.local in client/:
-NEXT_PUBLIC_API_URL=http://localhost:5000
+**What I Would Improve With More Time:**
 
-Run frontend:
-npm run dev
+ - Authentication & role-based access
+ - Pagination for large project/expense lists
+ - Better form validation and user feedback (toasts)
+ - Unit and integration tests
+ - Backend aggregation query for optimized budget calculations
+ - UI polish and accessibility improvements
 
-Frontend will run on:
-http://localhost:3000
+**Notes:**
 
-Database Schema Explanation:
-Projects Table:
-1. Column	Type	Description
-2. project_id	SERIAL (PK)	Unique project ID
-3. project_name	VARCHAR	Project name
-4. client_name	VARCHAR	Client name
-5. estimated_budget	NUMERIC	Total allocated budget
-6. created_at	TIMESTAMP	Creation time
-
-Expenses Table
-1. Column	Type	Description
-2. expense_id	SERIAL (PK)	Unique expense ID
-3. project_id	INTEGER (FK)	Linked project
-4. description	TEXT	Expense description
-5. amount	NUMERIC	Expense amount
-6. category	VARCHAR	Material / Labor / Other
-7. created_at	TIMESTAMP	Creation time
-
-One-to-many relationship: one project → many expenses
-
-ON DELETE CASCADE ensures expenses are removed if a project is deleted
-
-API Endpoints (Backend)
-Projects:
-1. POST /projects/add_projects
-2. GET /projects/get_projects
-
-Expenses:
-1. POST /expenses/add_expense/:project_id
-2. GET /expenses/get_expenses/:project_id
-3. PUT /expenses/update_expense/:expense_id
-4. DELETE /expenses/delete_expense/:expense_id
-
-Assumptions Made:
-1. Authentication is not required
-2. One currency (AED) is used throughout
-3. Project deletion is not part of scope (expenses delete handled)
-4. Basic validation is sufficient for this assessment
-5. What I Would Improve With More Time
-6. Authentication & role-based access
-7. Pagination for large project/expense lists
-8. Better form validation and user feedback (toasts)
-9. Unit and integration tests
-10. Backend aggregation query for optimized budget calculations
-11. UI polish and accessibility improvements
-
-Notes:
-1. Environment variables are used for clean separation between local and production setups
-2. No hardcoded credentials are committed to the repository
-3. Code is kept simple and readable as per assignment expectations
+ - Environment variables are used for clean separation between local and production setups
+ - No hardcoded credentials are committed to the repository
+ - Code is kept simple and readable as per assignment expectations
